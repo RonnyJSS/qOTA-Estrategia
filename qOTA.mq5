@@ -36,8 +36,44 @@
 input string Separador1 = "CONFIGURAÇÕES"; // ____________________________
 input int ADX_T_Periodo = 4; // ADX | Periodo
 
-double C_Porcentagem = C_T_Porcentagem / 100.00, ADX_B[], ADX_B_I_Positivo[], ADX_B_I_Negativo[], ADX_B_Positivo[], ADX_B_Negativo[], ADX_B_Temporario[], HA_Abertura[], HA_Fechamento[], HA_Minima[], HA_Maxima[];
+double ADX_B[], ADX_B_I_Positivo[], ADX_B_I_Negativo[], ADX_B_Positivo[], ADX_B_Negativo[], ADX_B_Temporario[], HA_Abertura[], HA_Fechamento[], HA_Minima[], HA_Maxima[];
 int ADX_Periodo, HA_Verde, HA_Vermelho, Win, Loss, Win_T, Loss_T, Win_Combo, Loss_Combo;
+
+struct Vela {
+    double Abertura;
+    double Fechamento;
+    double Maxima;
+    double Minima;
+
+};
+
+Vela HA_Tempo(const int i, const int Tempo, const datetime &Time[]) {
+
+    MqlDateTime Horario;
+    int ii;
+    Vela HA;
+    
+    TimeToStruct(Time[i],Horario);
+    
+    ii = Horario.min;
+
+    while (ii % Tempo != 0) {
+
+        ii--;
+
+    }
+    
+    Print(IntegerToString(ii));
+
+    //HA.Abertura = HA_Abertura[ii - 2];
+    //HA.Fechamento = HA_Fechamento[i - 2];
+
+    HA.Maxima = ii;
+    HA.Minima = i;
+
+    return HA;
+
+}
 
 bool HA(const int i) {
 
@@ -384,22 +420,28 @@ int OnCalculate(const int rates_total, const int prev_calculated, const datetime
 
             if (HA_Verde > 0) {
 
-                Compra(i, Open, Close, Time);
+                //Compra(i, Open, Close, Time);
 
             } else if (HA_Vermelho > 0) {
 
                 //Venda(i, Open, Close, Time);
-                Compra(i, Open, Close, Time);
+                //Compra(i, Open, Close, Time);
 
             }
 
             Comment("WinCOMBO: " + IntegerToString(Win_Combo), "  |  LossCOMBO: " + IntegerToString(Loss_Combo), "  |  Win: " + IntegerToString(Win), "  |  Loss: " + IntegerToString(Loss), "  |  Total: " + IntegerToString((Win + Loss)));
-            
+
         }
 
     }
 
-    if (rates_total != prev_calculated) {
+    if (Inicio != 1) {
+
+        Vela HA_Tempo3 = HA_Tempo(Inicio, 3, Time);
+        Print("Abertura " + DoubleToString(HA_Tempo3.Abertura));
+        Print("Fechamento " + DoubleToString(HA_Tempo3.Fechamento));
+        Print("Maxima " + IntegerToString((int) HA_Tempo3.Maxima));
+        Print("Minima " + IntegerToString((int) HA_Tempo3.Minima));
 
     }
 
